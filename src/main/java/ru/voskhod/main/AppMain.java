@@ -2,14 +2,16 @@ package ru.voskhod.main;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import ru.voskhod.dao.interfaces.PersonDao;
 import ru.voskhod.dao.interfaces.PhoneDao;
+import ru.voskhod.entities.Person;
 import ru.voskhod.entities.Phone;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 public class AppMain {
-    static ApplicationContext context =
+    private static ApplicationContext context =
             new ClassPathXmlApplicationContext("context.xml");
 
     public static void main(String[] args) {
@@ -20,13 +22,15 @@ public class AppMain {
 
     private static void getRequest() {
         PhoneDao phoneDao;
+        PersonDao personDao;
+        int id = 0;
         String input = reader();
         switch (input) {
-            case "Показатьсправочник":
+            case "показатьсправочник":
                 phoneDao = (PhoneDao) context.getBean("phoneDaoImpl");
                 phoneDao.getPhones();
                 getRequest();
-            case "Добавитьзапись":
+            case "добавитьзапись":
                 System.out.println("Укажите имя");
                 String name;
                 String phoneNumber;
@@ -41,27 +45,45 @@ public class AppMain {
                         System.out.println("Номер телефона на введен. Повторите команду");
                         getRequest();
                     } else {
+                        Person person = (Person) context.getBean("person");
+                        person.setPersonName(name);
                         Phone phone = (Phone) context.getBean("phone");
-                        phone.setPersonName(name);
                         phone.setPhoneNumber(phoneNumber);
-                        phoneDao = (PhoneDao) context.getBean("phoneDaoImpl");
-                        phoneDao.addPhone(phone);
+                        person.addPhone(phone);
+                        personDao = (PersonDao) context.getBean("personDaoImpl");
+                        personDao.addPerson(person);
                         getRequest();
                     }
                 }
-            case "Удалитьзапись":
+            case "удалитьзапись":
                 System.out.println("Укажите id записи, которую необходимо удалить");
-                int id = 0;
                 try {
                     id = Integer.parseInt(reader());
                 } catch (Exception e) {
                     System.out.println("Введен некоррекный id. Повторите команду");
                     getRequest();
                 }
-                phoneDao = (PhoneDao) context.getBean("phoneDaoImpl");
-                phoneDao.removePhone(id);
+                personDao = (PersonDao) context.getBean("personDaoImpl");
+                personDao.removePerson(id);
                 getRequest();
-            case "Выйти":
+            case "добавитьномертелефона":
+                System.out.println("Укажите id записи, в которую необходимо добавить еще один телефон");
+                try {
+                    id = Integer.parseInt(reader());
+                } catch (Exception e) {
+                    System.out.println("Введен некоррекный id. Повторите команду");
+                    getRequest();
+                }
+                System.out.println("Введите номер телефона");
+                phoneNumber = reader();
+                if (phoneNumber.equals("")) {
+                    System.out.println("Номер телефона на введен. Повторите команду");
+                    getRequest();
+                }
+                phoneDao = (PhoneDao) context.getBean("phoneDaoImpl");
+                phoneDao.addPhoneByPersonId(id, phoneNumber);
+                getRequest();
+            case "выйти":
                 System.exit(0);
         }
         System.out.println("Команда введена некорректно");
@@ -71,18 +93,18 @@ public class AppMain {
     }
 
     private static void info() {
-        System.out.println("Чтобы получить данные телефонный справочник, введите команду 'Показать справочник'");
-        System.out.println("Чтобы добавать запись в телефонный справочник, введите команду 'Добавить запись'");
-        System.out.println("Чтобы удалить запись из телефонного справочник, введите команду 'Удалить запись'");
-        System.out.println("Чтобы выйти из приложения, введите команду 'Выйти'");
-
+        System.out.println("-Чтобы получить данные телефонного справочника, введите команду 'Показать справочник"+"\n"
+                +"-Чтобы добавать запись в телефонный справочник, введите команду 'Добавить запись'"+"\n"
+                +"-Чтобы удалить запись из телефонного справочник, введите команду 'Удалить запись'"+"\n"
+                +"-Чтобы добавить номер телефона к имеющейся записи, введите команду 'Добавить номер телефона'"+"\n"
+                +"-Чтобы выйти из приложения, введите команду 'Выйти'");
     }
 
     private static String reader() {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String input = "";
         try {
-            input = br.readLine().replaceAll(" ", "");
+            input = br.readLine().replaceAll(" ", "").toLowerCase();
 
         } catch (Exception e) {
             e.printStackTrace();
