@@ -3,13 +3,24 @@ package ru.voskhod.entities;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "phones", schema = "phonebook", catalog = "")
+@Table(name = "phone", schema = "phonebook")
 public class Phone {
     private int id;
-    private String personName;
     private String phoneNumber;
 
+    private Person person;
+    @ManyToOne
+    @JoinColumn(name = "person_id", referencedColumnName = "id")
+    public Person getPerson() {
+        return this.person;
+    }
+
+    public void setPerson(Person person) {
+        this.person = person;
+    }
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     public int getId() {
         return id;
@@ -20,23 +31,13 @@ public class Phone {
     }
 
     @Basic
-    @Column(name = "person_name", nullable = false, length = 50)
-    public String getPersonName() {
-        return personName;
-    }
-
-    public void setPersonName(String personName) {
-        this.personName = personName;
-    }
-
-    @Basic
-    @Column(name = "phone_number", nullable = false, length = 50)
+    @Column(name = "phoneNumber", length = 55)
     public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setPhoneNumber(String phoneNuber) {
+        this.phoneNumber = phoneNuber;
     }
 
     @Override
@@ -44,11 +45,10 @@ public class Phone {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Phone that = (Phone) o;
+        Phone phone = (Phone) o;
 
-        if (id != that.id) return false;
-        if (personName != null ? !personName.equals(that.personName) : that.personName != null) return false;
-        if (phoneNumber != null ? !phoneNumber.equals(that.phoneNumber) : that.phoneNumber != null) return false;
+        if (id != phone.id) return false;
+        if (phoneNumber != null ? !phoneNumber.equals(phone.phoneNumber) : phone.phoneNumber != null) return false;
 
         return true;
     }
@@ -56,7 +56,6 @@ public class Phone {
     @Override
     public int hashCode() {
         int result = id;
-        result = 31 * result + (personName != null ? personName.hashCode() : 0);
         result = 31 * result + (phoneNumber != null ? phoneNumber.hashCode() : 0);
         return result;
     }
@@ -65,8 +64,8 @@ public class Phone {
     public String toString() {
         return "Phone{" +
                 "id=" + id +
-                ", personName='" + personName + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
+                ", phoneNuber='" + phoneNumber + '\'' +
+                ", person=" + person +
                 '}';
     }
 }

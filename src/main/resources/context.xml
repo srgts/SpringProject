@@ -18,8 +18,8 @@
         <property name="dataSource" ref="dataSource"/>
         <property name="configLocation" value="classpath:hibernate.cfg.xml"/>
     </bean>
-    <bean id="phoneDaoImpl" class="ru.voskhod.dao.impl.PhoneDaoImpl"/>
     <bean id="phone" class="ru.voskhod.entities.Phone"/>
+    <bean id="person" class="ru.voskhod.entities.Person"/>
 
     <tx:annotation-driven/>
     <bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">

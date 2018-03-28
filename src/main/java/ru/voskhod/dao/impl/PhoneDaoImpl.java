@@ -5,6 +5,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.voskhod.dao.interfaces.PhoneDao;
+import ru.voskhod.entities.Person;
 import ru.voskhod.entities.Phone;
 
 import javax.transaction.Transactional;
@@ -15,31 +16,26 @@ public class PhoneDaoImpl implements PhoneDao {
 
     @Autowired
     private SessionFactory sessionFactory;
-
-    private List<Phone> phones;
-
-    @Transactional
-    public void addPhone(Phone phone) {
-        sessionFactory.getCurrentSession().persist(phone);
-    }
+    @Autowired
+    private Phone phone;
+    @Autowired
+    private Person person;
 
     @Transactional
     @SuppressWarnings("unchecked")
     public List<Phone> getPhones() {
-        phones = sessionFactory.getCurrentSession()
+        List<Phone> phones = sessionFactory.getCurrentSession()
                 .createQuery("from Phone ").list();
         for (Phone phone : phones) System.out.println(phone);
         return phones;
     }
 
     @Transactional
-    public void removePhone(int id) {
+    public void addPhoneByPersonId(int personId, String phoneNumber) {
         Session session = sessionFactory.getCurrentSession();
-        Phone phone = session.get(Phone.class, id);
-        if (phone != null) {
-            session.delete(phone);
-        } else {
-            System.out.println("Запись с указанным id отсутствует");
-        }
+        person = session.get(Person.class, personId);
+        phone.setPerson(person);
+        phone.setPhoneNumber(phoneNumber);
+        session.merge(phone);
     }
 }
