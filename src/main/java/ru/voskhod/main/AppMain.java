@@ -6,6 +6,7 @@ import ru.voskhod.dao.interfaces.PersonDao;
 import ru.voskhod.dao.interfaces.PhoneDao;
 import ru.voskhod.entities.Person;
 import ru.voskhod.entities.Phone;
+import ru.voskhod.utils.XmlUtil;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -83,6 +84,10 @@ public class AppMain {
                 phoneDao = (PhoneDao) context.getBean("phoneDaoImpl");
                 phoneDao.addPhoneByPersonId(id, phoneNumber);
                 getRequest();
+            case "экспортвxml":
+                XmlUtil xmlUtil = (XmlUtil) context.getBean("xmlUtil");
+                xmlUtil.printXml();
+                getRequest();
             case "выйти":
                 System.exit(0);
         }
@@ -93,10 +98,11 @@ public class AppMain {
     }
 
     private static void info() {
-        System.out.println("-Чтобы получить данные телефонного справочника, введите команду 'Показать справочник"+"\n"
+        System.out.println("-Чтобы получить данные телефонного справочника, введите команду 'Показать справочник'"+"\n"
                 +"-Чтобы добавать запись в телефонный справочник, введите команду 'Добавить запись'"+"\n"
                 +"-Чтобы удалить запись из телефонного справочник, введите команду 'Удалить запись'"+"\n"
                 +"-Чтобы добавить номер телефона к имеющейся записи, введите команду 'Добавить номер телефона'"+"\n"
+                +"-Чтобы экспортировать данные в xml, введите команду 'Экспорт в xml'"+"\n"
                 +"-Чтобы выйти из приложения, введите команду 'Выйти'");
     }
 

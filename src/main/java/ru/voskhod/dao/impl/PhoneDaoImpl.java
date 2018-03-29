@@ -9,6 +9,7 @@ import ru.voskhod.entities.Person;
 import ru.voskhod.entities.Phone;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -21,13 +22,24 @@ public class PhoneDaoImpl implements PhoneDao {
     @Autowired
     private Person person;
 
+    private List<String[]> notes = new ArrayList<>();
+
     @Transactional
     @SuppressWarnings("unchecked")
-    public List<Phone> getPhones() {
+    public void getPhones() {
         List<Phone> phones = sessionFactory.getCurrentSession()
                 .createQuery("from Phone ").list();
-        for (Phone phone : phones) System.out.println(phone);
-        return phones;
+        for (Phone phone : phones) {
+            String[] fields = (String.valueOf(phone).replaceAll("person=", "")
+                    .replaceAll("[},']", "")
+                    .replaceAll("[{=]", " ")
+                    .split(" "));
+            notes.add(fields);
+            for (int i = 0; i < fields.length; i++) {
+                System.out.print(fields[i]+ "  ");
+            }
+            System.out.println();
+        }
     }
 
     @Transactional
@@ -37,5 +49,9 @@ public class PhoneDaoImpl implements PhoneDao {
         phone.setPerson(person);
         phone.setPhoneNumber(phoneNumber);
         session.merge(phone);
+    }
+
+    public List<String[]> getNotes(){
+        return notes;
     }
 }

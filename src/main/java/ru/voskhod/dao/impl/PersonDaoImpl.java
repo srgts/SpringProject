@@ -8,7 +8,6 @@ import ru.voskhod.dao.interfaces.PersonDao;
 import ru.voskhod.entities.Person;
 
 import javax.transaction.Transactional;
-import java.util.List;
 
 @Component
 public class PersonDaoImpl implements PersonDao{
